@@ -195,7 +195,7 @@ GameObject:
   - component: {fileID: 162397840}
   - component: {fileID: 162397839}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -227,7 +227,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 8d203d4ad045b43e6b36310555254836, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -283,8 +283,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ed826a86e8b48daa7360cc6fb19aad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 30
-  height: 30
+  width: 75
+  height: 75
   seed: 25345dafffa
   useRandomSeed: 1
   randomFillPercent: 49
@@ -313,7 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e5bad1d40e394a64ac30fba222eb4a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walls: {fileID: 0}
+  walls: {fileID: 162397840}
 --- !u!33 &809628499
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -334,7 +334,6 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 0}
   - {fileID: 2100000, guid: 9fa7e9599261543308474834ae370b94, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
