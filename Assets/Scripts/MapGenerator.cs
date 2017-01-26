@@ -9,8 +9,9 @@ public class MapGenerator : MonoBehaviour {
 
 	public bool filterSmallRooms;
 	public bool filterSmallWalls;
-	public int wallThresholdSize = 100;
+	public int wallThresholdSize = 50;
 	public int roomThresholdSize = 50;
+	public int borderSize = 0;
 
 	public string seed;
 	public bool useRandomSeed;
@@ -38,7 +39,6 @@ public class MapGenerator : MonoBehaviour {
 
 		ProcessMap ();
 
-		int borderSize = 5;
 		int[,] borderedMap = new int[width + borderSize * 2, height + borderSize * 2];
 
 		for (int x = 0; x < borderedMap.GetLength(0); x++) {
@@ -84,7 +84,7 @@ public class MapGenerator : MonoBehaviour {
 		}
 		CoonectClosestRooms (survivingRooms);
 	}
-
+		
 	void CoonectClosestRooms(List<Room> allRooms){
 		int bestDistance = 0;
 		Coord bestTileA = new Coord ();
@@ -133,11 +133,11 @@ public class MapGenerator : MonoBehaviour {
 	void CreatePassage(Room roomA, Room roomB, Coord tileA, Coord tileB){
 		Room.ConnectRooms (roomA, roomB);
 
-		Debug.DrawRay (CoordToWorldPoint (tileA), CoordToWorldPoint (tileB), Color.green, 100);
+		Debug.DrawLine (CoordToWorldPoint (tileA), CoordToWorldPoint (tileB), Color.green, 100);
 	}
 
 	Vector3 CoordToWorldPoint(Coord tile){
-		return new Vector3 (-width / 2 + .5f + tile.tileX, 2, -height / 2 + .5f + tile.tileY);
+		return new Vector3 (-width / 2 + .5f + tile.tileX, 2, -height / 2 + .5f + tile.tileY - 10);
 	}
 
 	List<List<Coord>> GetRegions(int tileType){
