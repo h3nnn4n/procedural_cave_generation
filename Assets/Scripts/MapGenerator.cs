@@ -77,6 +77,8 @@ public class MapGenerator : MonoBehaviour {
 					foreach (Coord tile in roomRegion) {
 						map [tile.tileX, tile.tileY] = 1;
 					}
+				} else {
+					survivingRooms.Add (new Room (roomRegion, map));
 				}
 			} else {
 				survivingRooms.Add (new Room (roomRegion, map));
@@ -110,7 +112,7 @@ public class MapGenerator : MonoBehaviour {
 			roomListB = allRooms;
 		}
 
-		int bestDistance = 0;
+		int bestDistance = 1000000;
 		Coord bestTileA = new Coord ();
 		Coord bestTileB = new Coord ();
 		Room bestRoomA = new Room ();
@@ -128,11 +130,6 @@ public class MapGenerator : MonoBehaviour {
 			foreach (Room roomB in roomListB) {
 				if (roomA == roomB || roomA.IsCoonected(roomB))
 					continue;
-				
-//				if (roomA.IsCoonected (roomB) && !forceAccessibilityFromMainRoom) {
-//					possibleConnectionFound = false;
-//					break;
-//				}
 				
 				for (int tileIndexA = 0; tileIndexA < roomA.edgeTiles.Count; tileIndexA++) {
 					for (int tileIndexB = 0; tileIndexB < roomB.edgeTiles.Count; tileIndexB++) {
@@ -171,7 +168,76 @@ public class MapGenerator : MonoBehaviour {
 	void CreatePassage(Room roomA, Room roomB, Coord tileA, Coord tileB){
 		Room.ConnectRooms (roomA, roomB);
 
-		Debug.DrawLine (CoordToWorldPoint (tileA), CoordToWorldPoint (tileB), Color.green, 100);
+//		Debug.DrawLine (CoordToWorldPoint (tileA), CoordToWorldPoint (tileB), Color.green, 100);
+
+		List<Coord> line = getLine (tileA, tileB);
+		foreach (Coord c in line) {
+			DrawCircle (c, 2);
+		}
+	}
+
+	void DrawCircle (Coord c, int r){
+		for (int x = -r; x <= r; x++) {
+			for (int y = -r; y <= r; y++) {
+				if (x*x + y*y <= r * r) {
+					int realX = c.tileX + x;
+					int realY = c.tileY + y;
+
+					if (IsInMapRange (realX, realY)) {
+						map [realX, realY] = 0;
+					}
+				}
+			}
+		}
+	}
+		
+	List<Coord> getLine(Coord from, Coord to ){
+		List<Coord> line = new List<Coord> ();
+
+		int x = from.tileX;
+		int y = from.tileY;
+
+		int dx = to.tileX - from.tileX;
+		int dy = to.tileY - from.tileY;
+
+		bool inverted = false;
+		int step = Math.Sign (dx);
+		int gradientStep = Math.Sign (dy);
+
+		int longest = Mathf.Abs (dx);
+		int shortest = Mathf.Abs (dy);
+
+		if (longest < shortest) {
+			inverted = true;
+			longest = Mathf.Abs (dy);
+			shortest = Mathf.Abs (dx);
+
+			step = Math.Sign (dy);
+			gradientStep = Math.Sign (dx);
+		}
+
+		int gradientAccumulation = longest / 2;
+
+		for (int i = 0; i< longest ; i++){
+			line.Add(new Coord(x, y));
+			if ( inverted ) {
+				y += step;
+			} else {
+				x += step;
+			}
+
+			gradientAccumulation += shortest;
+			if ( gradientAccumulation >= longest ) {
+				if ( inverted ) {
+					x += gradientStep;
+				} else {
+					y += gradientStep;
+				}
+				gradientAccumulation -= longest;
+			}
+		}
+
+		return line;
 	}
 
 	Vector3 CoordToWorldPoint(Coord tile){
