@@ -6,6 +6,9 @@ public class MeshGenerator : MonoBehaviour {
 
 	public SquareGrid squareGrid;
 	public MeshFilter walls;
+	public MeshFilter cave;
+	public bool is2D;
+
 	List<Vector3> vertices;
 	List<int> triangles;
 
@@ -30,13 +33,37 @@ public class MeshGenerator : MonoBehaviour {
 		}
 				
 		Mesh mesh = new Mesh ();
-		GetComponent<MeshFilter> ().mesh = mesh;
+		cave.mesh = mesh;
 
 		mesh.vertices = vertices.ToArray ();
 		mesh.triangles = triangles.ToArray ();
 		mesh.RecalculateNormals ();
 
-		CreateWallMesh ();
+		if (!is2D) {
+			CreateWallMesh ();
+		} else {
+			Generate2dColliders ();
+		}
+	}
+
+	void Generate2dColliders(){
+
+		EdgeCollider2D[] currentColliders = gameObject.GetComponents<EdgeCollider2D> ();
+		for (int i = 0; i < currentColliders.Length; i++) {
+			Destroy (currentColliders [i]);
+		}
+
+		CalculateMeshOutlies ();
+
+		foreach (List<int> outline in outlines) {
+			EdgeCollider2D edgeCollider = gameObject.AddComponent<EdgeCollider2D> ();
+			Vector2[] edgePoints = new Vector2[outline.Count];
+			for(int i = 0 ;i < outline.Count; i ++ ) {
+				edgePoints[i] = new Vector2 (vertices[outline[i]].x, vertices[outline[i]].z);
+			}
+
+			edgeCollider.points = edgePoints;
+		}
 	}
 
 	void CreateWallMesh(){
@@ -68,6 +95,9 @@ public class MeshGenerator : MonoBehaviour {
 		wallmesh.vertices = wallVertices.ToArray ();
 		wallmesh.triangles = wallTriangles.ToArray ();
 		walls.mesh = wallmesh;
+
+		MeshCollider wallCollider = walls.gameObject.AddComponent<MeshCollider> ();
+		wallCollider.sharedMesh = wallmesh;
 	}
 
 	void TriangulateSquare (Square square) {
